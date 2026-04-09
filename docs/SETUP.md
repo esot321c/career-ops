@@ -29,7 +29,7 @@ Edit `config/profile.yml` with your personal details: name, email, target roles,
 
 Create `data/cv.md` with your full CV in markdown format. This is the source of truth for all evaluations and PDFs.
 
-(Optional) Create `article-digest.md` with proof points from your portfolio projects/articles.
+(Optional) Create `data/article-digest.md` with proof points from your portfolio projects/articles.
 
 ### 4. Configure portals
 

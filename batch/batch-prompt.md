@@ -16,14 +16,14 @@ You are a job posting evaluation worker for the candidate (read name from config
 |------|---------------|------|
 | data/cv.md | `data/cv.md (project root)` | ALWAYS |
 | llms.txt | `llms.txt (if exists)` | ALWAYS |
-| article-digest.md | `article-digest.md (project root)` | ALWAYS (proof points) |
+| data/article-digest.md | `data/article-digest.md` | ALWAYS (proof points) |
 | i18n.ts | `i18n.ts (if exists, optional)` | Interviews/deep only |
 | cv-template.html | `templates/cv-template.html` | For PDF |
 | generate-pdf.mjs | `generate-pdf.mjs` | For PDF |
 
 **RULE: NEVER write to data/cv.md or i18n.ts.** They are read-only.
-**RULE: NEVER hardcode metrics.** Read them from data/cv.md + article-digest.md at evaluation time.
-**RULE: For article metrics, article-digest.md takes precedence over data/cv.md.** data/cv.md may have older numbers — that is normal.
+**RULE: NEVER hardcode metrics.** Read them from data/cv.md + data/article-digest.md at evaluation time.
+**RULE: For article metrics, data/article-digest.md takes precedence over data/cv.md.** data/cv.md may have older numbers — that is normal.
 
 ---
 
@@ -68,22 +68,22 @@ Classify the posting into one of the 6 archetypes. If it is a hybrid, indicate t
 
 **Adaptive framing:**
 
-> **Concrete metrics are read from `data/cv.md` + `article-digest.md` at each evaluation. NEVER hardcode numbers here.**
+> **Concrete metrics are read from `data/cv.md` + `data/article-digest.md` at each evaluation. NEVER hardcode numbers here.**
 
 | If the role is... | Emphasize about the candidate... | Proof point sources |
 |-------------------|--------------------------|--------------------------|
-| Platform / LLMOps | Production systems builder, observability, evals, closed-loop | article-digest.md + data/cv.md |
-| Agentic / Automation | Multi-agent orchestration, HITL, reliability, cost | article-digest.md + data/cv.md |
-| Technical AI PM | Product discovery, PRDs, metrics, stakeholder mgmt | data/cv.md + article-digest.md |
-| Solutions Architect | System design, integrations, enterprise-ready | article-digest.md + data/cv.md |
-| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod | data/cv.md + article-digest.md |
-| AI Transformation Lead | Change management, team enablement, adoption | data/cv.md + article-digest.md |
+| Platform / LLMOps | Production systems builder, observability, evals, closed-loop | data/article-digest.md + data/cv.md |
+| Agentic / Automation | Multi-agent orchestration, HITL, reliability, cost | data/article-digest.md + data/cv.md |
+| Technical AI PM | Product discovery, PRDs, metrics, stakeholder mgmt | data/cv.md + data/article-digest.md |
+| Solutions Architect | System design, integrations, enterprise-ready | data/article-digest.md + data/cv.md |
+| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod | data/cv.md + data/article-digest.md |
+| AI Transformation Lead | Change management, team enablement, adoption | data/cv.md + data/article-digest.md |
 
 **Cross-cutting advantage**: Frame profile as **"Technical builder"** who adapts framing to the role:
 - For PM: "builder who reduces uncertainty with prototypes and then productionizes with discipline"
 - For FDE: "builder who delivers fast with observability and metrics from day 1"
 - For SA: "builder who designs end-to-end systems with real integration experience"
-- For LLMOps: "builder who puts AI into production with closed-loop quality systems — read metrics from article-digest.md"
+- For LLMOps: "builder who puts AI into production with closed-loop quality systems — read metrics from data/article-digest.md"
 
 Turn "builder" into a professional signal, not a "hobby maker." The framing changes, the truth stays the same.
 
@@ -334,7 +334,7 @@ If something fails:
 6. Use corporate-speak
 
 ### ALWAYS
-1. Read data/cv.md, llms.txt, and article-digest.md before evaluating
+1. Read data/cv.md, llms.txt, and data/article-digest.md before evaluating
 2. Detect the role archetype and adapt the framing
 3. Cite exact CV lines when matching
 4. Use WebSearch for comp and company data

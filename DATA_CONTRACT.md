@@ -11,7 +11,7 @@ These files contain your personal data, customizations, and work product. Update
 | `data/cv.md` | Your CV in markdown |
 | `config/profile.yml` | Your identity, targets, comp range |
 | `modes/_profile.md` | Your archetypes, narrative, negotiation scripts |
-| `article-digest.md` | Your proof points from portfolio |
+| `data/article-digest.md` | Your proof points from portfolio |
 | `portals.yml` | Your customized company list |
 | `dashboard/data/career-ops.db` | Your application tracker (SQLite) |
 | `data/pipeline.md` | Optional scratch pad for URLs |

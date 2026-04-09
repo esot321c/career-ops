@@ -13,12 +13,12 @@
 | File | Path | When |
 |------|------|------|
 | data/cv.md | `data/cv.md` (project root) | ALWAYS |
-| article-digest.md | `article-digest.md` (if exists) | ALWAYS (detailed proof points) |
+| data/article-digest.md | `data/article-digest.md` (if exists) | ALWAYS (detailed proof points) |
 | profile.yml | `config/profile.yml` | ALWAYS (candidate identity and targets) |
 | _profile.md | `modes/_profile.md` | ALWAYS (user archetypes, narrative, negotiation) |
 
-**RULE: NEVER hardcode metrics from proof points.** Read them from data/cv.md + article-digest.md at evaluation time.
-**RULE: For article/project metrics, article-digest.md takes precedence over data/cv.md.**
+**RULE: NEVER hardcode metrics from proof points.** Read them from data/cv.md + data/article-digest.md at evaluation time.
+**RULE: For article/project metrics, data/article-digest.md takes precedence over data/cv.md.**
 **RULE: Read _profile.md AFTER this file. User customizations in _profile.md override defaults here.**
 
 ---
@@ -73,7 +73,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 ### ALWAYS
 
 0. **Cover letter:** If the form allows it, ALWAYS include one. Same visual design as CV. JD quotes mapped to proof points. 1 page max.
-1. Read data/cv.md, _profile.md, and article-digest.md (if exists) before evaluating
+1. Read data/cv.md, _profile.md, and data/article-digest.md (if exists) before evaluating
 1b. **First evaluation of each session:** Run `node cv-sync-check.mjs`. If warnings, notify user.
 2. Detect the role archetype and adapt framing per _profile.md
 3. Cite exact lines from CV when matching
@@ -93,27 +93,35 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 | WebSearch | Comp research, trends, company culture, LinkedIn contacts, fallback for JDs |
 | WebFetch | Fallback for extracting JDs from static pages |
 | Playwright | Verify postings (browser_navigate + browser_snapshot). **NEVER 2+ agents with Playwright in parallel.** |
-| Read | data/cv.md, _profile.md, article-digest.md, cv-template.html |
-| Write | Temporary HTML for PDF, reports .md |
-| Edit | Update reports |
+| Read | data/cv.md, _profile.md, data/article-digest.md, cv-template.html |
+| Write | Temporary HTML for PDF, temp markdown for full eval reports (e.g. `c:/tmp/eval-{jobId}.md` for the `reportFile` arg of `db-write.ts eval`) |
 | Canva MCP | Optional visual CV generation. Duplicate base design, edit text, export PDF. Requires `canva_resume_design_id` in profile.yml. |
-| Bash | `node generate-pdf.mjs` |
+| Bash | `node generate-pdf.mjs`, `npx tsx dashboard/scripts/db-write.ts ...` for all DB reads/writes (job, eval, status, query, eval-read, search) |
 
 ### Tracker DB Writes
 
-After every evaluation, persist to the SQLite database. **Do NOT write TSV files or edit applications.md.**
+After every evaluation, persist to the SQLite database. **Do NOT write TSV files, edit applications.md, or write `reports/*.md` files.** Full evaluation reports live in the DB on `evaluations.full_report`.
 
 ```bash
 # 1. Insert the job
 npx tsx dashboard/scripts/db-write.ts job '{"company":"Acme","role":"Senior SWE","sourceUrl":"https://...","jdText":"...","boardType":"greenhouse","salaryMin":150000,"salaryMax":200000,"currency":"USD","location":"Remote","remotePolicy":"remote","source":"scan"}'
 # Returns: {"ok":true,"jobId":123}
 
-# 2. Insert the evaluation (use jobId from step 1)
-npx tsx dashboard/scripts/db-write.ts eval '{"jobId":123,"mode":"full","fitScore":4.2,"recommendation":"apply","summary":"Strong match...","redFlags":"None"}'
+# 2a. Light eval — inline JSON
+npx tsx dashboard/scripts/db-write.ts eval '{"jobId":123,"mode":"light","fitScore":4.2,"recommendation":"apply","summary":"Strong match...","redFlags":"None"}'
+
+# 2b. Full eval — write the markdown report to a temp file, pass via reportFile
+#     (avoids JSON-escaping multiline markdown into a bash arg)
+#     Use the Write tool to create c:/tmp/eval-{jobId}.md with the full A-G report first.
+npx tsx dashboard/scripts/db-write.ts eval '{"jobId":123,"mode":"full","fitScore":4.4,"recommendation":"apply","summary":"...","redFlags":"...","reportFile":"c:/tmp/eval-123.md"}'
 
 # 3. Ping the dashboard to refresh (if running)
 npx tsx dashboard/scripts/db-write.ts ping
 ```
+
+**Read a stored full report:** `npx tsx dashboard/scripts/db-write.ts eval-read '{"jobId":123}'` or `'{"evalId":456}'`
+
+**Search across stored reports:** `npx tsx dashboard/scripts/db-write.ts search '{"q":"Stripe Connect","limit":10}'`
 
 **Recommendations:** `"apply"` (score >= 4.0), `"tweak"` (score 3.0-3.9), `"skip"` (score < 3.0)
 

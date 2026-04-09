@@ -91,20 +91,17 @@ Also include:
 
 **ALWAYS** after generating blocks A-F:
 
-### 1. Save report .md
+### 1. Build the report markdown
 
-Save the complete evaluation to `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
+The complete evaluation gets stored in the dashboard DB as the `full_report` field on the evaluation row. There is **no `reports/` folder anymore** — do not write a markdown file to disk as the canonical store. The dashboard reads the markdown directly from the DB and renders it.
 
-- `{###}` = next sequential number (3 digits, zero-padded)
-- `{company-slug}` = company name in lowercase, no spaces (use hyphens)
-- `{YYYY-MM-DD}` = current date
-
-**Report format:**
+**Report format** (this is the markdown content that goes into `full_report`):
 
 ```markdown
 # Evaluation: {Company} — {Role}
 
 **Date:** {YYYY-MM-DD}
+**URL:** {source URL}
 **Archetype:** {detected}
 **Score:** {X/5}
 **PDF:** {path or pending}
@@ -138,20 +135,46 @@ Save the complete evaluation to `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 (list of 15-20 JD keywords for ATS optimization)
 ```
 
+The `**URL:**` line in the header is mandatory.
+
 ### 2. Persist to Dashboard DB
 
-**ALWAYS** write the job and evaluation to the SQLite database:
+**ALWAYS** write the job and evaluation to the SQLite database. Pass the markdown report via a temp file (`reportFile`), not as inline JSON:
 
 ```bash
 # 1. Insert job record
 npx tsx dashboard/scripts/db-write.ts job '{"company":"...","role":"...","sourceUrl":"...","jdText":"...","boardType":"...","salaryMin":...,"salaryMax":...,"currency":"...","location":"...","remotePolicy":"...","source":"direct"}'
 # Returns: {"ok":true,"jobId":123}
 
-# 2. Insert evaluation (use jobId from step 1)
-npx tsx dashboard/scripts/db-write.ts eval '{"jobId":123,"mode":"full","fitScore":X.X,"recommendation":"apply|tweak|skip","summary":"...","redFlags":"..."}'
+# 2. Write the full report markdown to a temp file (use the Write tool):
+#    c:/tmp/eval-{jobId}.md
 
-# 3. Ping dashboard to refresh
+# 3. Insert evaluation, pointing reportFile at the temp file:
+npx tsx dashboard/scripts/db-write.ts eval '{"jobId":123,"mode":"full","fitScore":X.X,"recommendation":"apply|tweak|skip","summary":"...","redFlags":"...","reportFile":"c:/tmp/eval-123.md"}'
+# Returns: {"ok":true,"evalId":456}
+
+# 4. Ping dashboard to refresh
 npx tsx dashboard/scripts/db-write.ts ping
 ```
 
+The `reportFile` path can be absolute or relative to the current working directory. The script reads the file and stores its contents in `full_report`. After the insert succeeds you can delete the temp file.
+
 **Recommendations:** `"apply"` (score >= 4.0), `"tweak"` (score 3.0-3.9), `"skip"` (score < 3.0)
+
+### Reading existing reports
+
+To read a past evaluation's full report:
+
+```bash
+# Latest full eval for a job
+npx tsx dashboard/scripts/db-write.ts eval-read '{"jobId":123}'
+
+# Specific evaluation by ID
+npx tsx dashboard/scripts/db-write.ts eval-read '{"evalId":456}'
+```
+
+To search across all stored reports for a keyword:
+
+```bash
+npx tsx dashboard/scripts/db-write.ts search '{"q":"Stripe Connect","limit":10}'
+```

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 
 type Job = {
@@ -62,6 +62,37 @@ function formatSalary(min: number | null, max: number | null, currency: string |
   return `${c} ${fmt(min || max!)}`;
 }
 
+// Subscribe to localStorage changes. Browsers only fire the native "storage"
+// event for cross-tab writes, so useLocalStorage's setter also dispatches a
+// custom "local-storage" event for same-tab updates.
+function subscribeToStorage(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener("local-storage", callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener("local-storage", callback);
+  };
+}
+
+// useSyncExternalStore-based localStorage hook. Provides separate server and
+// client snapshots so React doesn't flag a hydration mismatch when the persisted
+// value differs from the default.
+function useLocalStorage<T extends string>(
+  key: string,
+  defaultValue: T,
+): [T, (v: T) => void] {
+  const value = useSyncExternalStore<T>(
+    subscribeToStorage,
+    () => (localStorage.getItem(key) as T | null) ?? defaultValue,
+    () => defaultValue,
+  );
+  const setValue = (v: T) => {
+    localStorage.setItem(key, v);
+    window.dispatchEvent(new Event("local-storage"));
+  };
+  return [value, setValue];
+}
+
 function SortHeader({ label, sortKey, currentSort, currentDir, onSort }: {
   label: string;
   sortKey: SortKey;
@@ -86,29 +117,12 @@ function SortHeader({ label, sortKey, currentSort, currentDir, onSort }: {
 export function PipelineTable() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
-  const [filter, setFilter] = useState<Filter>(() => {
-    if (typeof window === "undefined") return "all";
-    return (localStorage.getItem("pipeline-filter") as Filter) || "all";
-  });
-  const [search, setSearch] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return localStorage.getItem("pipeline-search") || "";
-  });
-  const [sortKey, setSortKey] = useState<SortKey>(() => {
-    if (typeof window === "undefined") return "fitScore";
-    return (localStorage.getItem("pipeline-sortKey") as SortKey) || "fitScore";
-  });
-  const [sortDir, setSortDir] = useState<SortDir>(() => {
-    if (typeof window === "undefined") return "desc";
-    return (localStorage.getItem("pipeline-sortDir") as SortDir) || "desc";
-  });
-
-  useEffect(() => {
-    localStorage.setItem("pipeline-filter", filter);
-    localStorage.setItem("pipeline-search", search);
-    localStorage.setItem("pipeline-sortKey", sortKey);
-    localStorage.setItem("pipeline-sortDir", sortDir);
-  }, [filter, search, sortKey, sortDir]);
+  // useLocalStorage handles SSR-safe reads, hydration, and writes via
+  // useSyncExternalStore. No hydration mismatch and no setState-in-effect.
+  const [filter, setFilter] = useLocalStorage<Filter>("pipeline-filter", "all");
+  const [search, setSearch] = useLocalStorage<string>("pipeline-search", "");
+  const [sortKey, setSortKey] = useLocalStorage<SortKey>("pipeline-sortKey", "fitScore");
+  const [sortDir, setSortDir] = useLocalStorage<SortDir>("pipeline-sortDir", "desc");
 
   useEffect(() => {
     const load = async () => {

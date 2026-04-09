@@ -31,17 +31,17 @@
 ## Your Adaptive Framing
 
 <!-- Map YOUR projects to each archetype. Example:
-     | Platform / LLMOps | My monitoring dashboard project | article-digest.md |
+     | Platform / LLMOps | My monitoring dashboard project | data/article-digest.md |
      | Agentic | My chatbot with HITL escalation | data/cv.md section 3 | -->
 
 | If the role is... | Emphasize about you... | Proof point sources |
 |-------------------|------------------------|---------------------|
-| Platform / LLMOps | Production systems builder, observability, evals | article-digest.md + data/cv.md |
-| Agentic / Automation | Multi-agent orchestration, HITL, reliability | article-digest.md + data/cv.md |
-| Technical AI PM | Product discovery, PRDs, metrics | data/cv.md + article-digest.md |
-| Solutions Architect | System design, integrations, enterprise-ready | article-digest.md + data/cv.md |
-| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod | data/cv.md + article-digest.md |
-| AI Transformation Lead | Change management, team enablement, adoption | data/cv.md + article-digest.md |
+| Platform / LLMOps | Production systems builder, observability, evals | data/article-digest.md + data/cv.md |
+| Agentic / Automation | Multi-agent orchestration, HITL, reliability | data/article-digest.md + data/cv.md |
+| Technical AI PM | Product discovery, PRDs, metrics | data/cv.md + data/article-digest.md |
+| Solutions Architect | System design, integrations, enterprise-ready | data/article-digest.md + data/cv.md |
+| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod | data/cv.md + data/article-digest.md |
+| AI Transformation Lead | Change management, team enablement, adoption | data/cv.md + data/article-digest.md |
 
 ## Your Exit Narrative
 
@@ -49,7 +49,7 @@
 
 Use the candidate's exit story from `config/profile.yml` to frame ALL content:
 - **In PDF Summaries:** Bridge from past to future
-- **In STAR stories:** Reference proof points from article-digest.md
+- **In STAR stories:** Reference proof points from data/article-digest.md
 - **In Draft Answers:** The transition narrative appears in the first response
 
 ## Your Cross-cutting Advantage

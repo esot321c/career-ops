@@ -181,7 +181,7 @@ Features: filterable by all statuses and recommendation types, sortable columns,
 career-ops/
 ├── CLAUDE.md                    # Agent instructions
 ├── data/cv.md                        # Your CV (create this)
-├── article-digest.md            # Your proof points (optional)
+├── data/article-digest.md            # Your proof points (optional)
 ├── config/
 │   └── profile.example.yml      # Template for your profile
 ├── modes/                       # 14 skill modes

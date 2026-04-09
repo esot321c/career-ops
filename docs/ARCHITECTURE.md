@@ -80,7 +80,7 @@ The orchestrator manages parallelism, state, retries, and resume.
 
 ```
 data/cv.md               →  Evaluation context
-article-digest.md        →  Proof points for matching
+data/article-digest.md        →  Proof points for matching
 config/profile.yml       →  Candidate identity
 portals.yml              →  Scanner configuration
 templates/states.yml     →  Canonical status values
