@@ -32,16 +32,16 @@
 
 <!-- Map YOUR projects to each archetype. Example:
      | Platform / LLMOps | My monitoring dashboard project | article-digest.md |
-     | Agentic | My chatbot with HITL escalation | cv.md section 3 | -->
+     | Agentic | My chatbot with HITL escalation | data/cv.md section 3 | -->
 
 | If the role is... | Emphasize about you... | Proof point sources |
 |-------------------|------------------------|---------------------|
-| Platform / LLMOps | Production systems builder, observability, evals | article-digest.md + cv.md |
-| Agentic / Automation | Multi-agent orchestration, HITL, reliability | article-digest.md + cv.md |
-| Technical AI PM | Product discovery, PRDs, metrics | cv.md + article-digest.md |
-| Solutions Architect | System design, integrations, enterprise-ready | article-digest.md + cv.md |
-| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod | cv.md + article-digest.md |
-| AI Transformation Lead | Change management, team enablement, adoption | cv.md + article-digest.md |
+| Platform / LLMOps | Production systems builder, observability, evals | article-digest.md + data/cv.md |
+| Agentic / Automation | Multi-agent orchestration, HITL, reliability | article-digest.md + data/cv.md |
+| Technical AI PM | Product discovery, PRDs, metrics | data/cv.md + article-digest.md |
+| Solutions Architect | System design, integrations, enterprise-ready | article-digest.md + data/cv.md |
+| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod | data/cv.md + article-digest.md |
+| AI Transformation Lead | Change management, team enablement, adoption | data/cv.md + article-digest.md |
 
 ## Your Exit Narrative
 

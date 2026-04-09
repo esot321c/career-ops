@@ -24,10 +24,10 @@
 
 | JD Requirement | CV Match | Source |
 |----------------|----------|--------|
-| "Production LLM systems" | Built real-time fraud detection + LLM eval toolkit | cv.md: TechFin Corp |
-| "Model monitoring and observability" | Drift detection, Grafana dashboards, retraining triggers | cv.md: ML Platform Lead |
-| "Python + distributed systems" | Python, Kafka, Kubernetes, Redis | cv.md: Skills |
-| "CI/CD for ML" | Reduced deploy from 2 weeks to 4 hours | cv.md: TechFin Corp |
+| "Production LLM systems" | Built real-time fraud detection + LLM eval toolkit | data/cv.md: TechFin Corp |
+| "Model monitoring and observability" | Drift detection, Grafana dashboards, retraining triggers | data/cv.md: ML Platform Lead |
+| "Python + distributed systems" | Python, Kafka, Kubernetes, Redis | data/cv.md: Skills |
+| "CI/CD for ML" | Reduced deploy from 2 weeks to 4 hours | data/cv.md: TechFin Corp |
 
 ### Gaps
 

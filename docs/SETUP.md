@@ -4,9 +4,9 @@
 
 - [Claude Code](https://claude.ai/code) installed and configured
 - Node.js 18+ (for PDF generation and utility scripts)
-- (Optional) Go 1.21+ (for the dashboard TUI)
+- pnpm (for the dashboard)
 
-## Quick Start (5 steps)
+## Quick Start
 
 ### 1. Clone and install
 
@@ -27,7 +27,7 @@ Edit `config/profile.yml` with your personal details: name, email, target roles,
 
 ### 3. Add your CV
 
-Create `cv.md` in the project root with your full CV in markdown format. This is the source of truth for all evaluations and PDFs.
+Create `data/cv.md` with your full CV in markdown format. This is the source of truth for all evaluations and PDFs.
 
 (Optional) Create `article-digest.md` with proof points from your portfolio projects/articles.
 
@@ -42,39 +42,32 @@ Edit `portals.yml`:
 - Add companies you want to track in `tracked_companies`
 - Customize `search_queries` for your preferred job boards
 
-### 5. Start using
-
-Open Claude Code in this directory:
+### 5. Install the dashboard
 
 ```bash
-claude
+cd dashboard && pnpm install
 ```
 
-Then paste a job offer URL or description. Career-ops will automatically evaluate it, generate a report, create a tailored PDF, and track it.
+### 6. Start using
 
-## Available Commands
+The typical workflow:
 
-| Action | How |
-|--------|-----|
-| Evaluate an offer | Paste a URL or JD text |
-| Search for offers | `/career-ops scan` |
-| Process pending URLs | `/career-ops pipeline` |
-| Generate a PDF | `/career-ops pdf` |
-| Batch evaluate | `/career-ops batch` |
-| Check tracker status | `/career-ops tracker` |
-| Fill application form | `/career-ops apply` |
+**Discover and evaluate** (in Claude Code):
+```bash
+claude
+/career-ops scan           # Scan portals, light-eval new postings, write to DB
+```
+
+**Review and act** (in browser):
+```bash
+cd dashboard && pnpm dev   # Open http://localhost:3000
+```
+
+Browse your pipeline, filter by status or score, update statuses inline. Each job detail page shows Claude Code commands for next steps (apply, deep research, outreach, PDF generation).
 
 ## Verify Setup
 
 ```bash
 node cv-sync-check.mjs      # Check configuration
 node verify-pipeline.mjs     # Check pipeline integrity
-```
-
-## Build Dashboard (Optional)
-
-```bash
-cd dashboard
-go build -o career-dashboard .
-./career-dashboard            # Opens TUI pipeline viewer
 ```

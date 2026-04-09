@@ -15,26 +15,32 @@
      │ (auto-pipe)  │   │  (scan.md)  │   │   (batch-runner)   │
      └──────┬──────┘   └──────┬──────┘   └───────────┬────────┘
             │                  │                       │
-            │           ┌──────▼──────┐          ┌────▼─────┐
-            │           │ pipeline.md │          │ N workers│
-            │           │ (URL inbox) │          │ (claude -p)
-            │           └─────────────┘          └────┬─────┘
-            │                                          │
-     ┌──────▼──────────────────────────────────────────▼──────┐
+            │                  │                  ┌────▼─────┐
+            │                  │                  │ N workers│
+            │                  │                  │ (claude -p)
+            │                  │                  └────┬─────┘
+            │                  │                       │
+     ┌──────▼──────────────────▼───────────────────────▼──────┐
      │                    Output Pipeline                      │
      │  ┌──────────┐  ┌────────────┐  ┌───────────────────┐  │
-     │  │ Report.md│  │  PDF (HTML  │  │ Tracker TSV       │  │
-     │  │ (A-F eval)│  │  → Puppeteer)│  │ (merge-tracker)  │  │
+     │  │ Report.md│  │  PDF (HTML  │  │ DB Write          │  │
+     │  │ (A-F eval)│  │  → Puppeteer)│  │ (db-write.ts)    │  │
      │  └──────────┘  └────────────┘  └───────────────────┘  │
      └────────────────────────────────────────────────────────┘
                                │
                     ┌──────────▼──────────┐
-                    │  data/applications.md │
-                    │  (canonical tracker)  │
-                    └──────────────────────┘
+                    │  dashboard/data/     │
+                    │  career-ops.db       │
+                    │  (SQLite + Drizzle)  │
+                    └──────────┬──────────┘
+                               │
+                    ┌──────────▼──────────┐
+                    │  Next.js Dashboard   │
+                    │  localhost:3000      │
+                    └─────────────────────┘
 ```
 
-## Evaluation Flow (Single Offer)
+## Evaluation Flow (Single Posting)
 
 1. **Input**: User pastes JD text or URL
 2. **Extract**: Playwright/WebFetch extracts JD from URL
@@ -49,11 +55,11 @@
 5. **Score**: Weighted average across 10 dimensions (1-5)
 6. **Report**: Save as `reports/{num}-{company}-{date}.md`
 7. **PDF**: Generate ATS-optimized CV (`generate-pdf.mjs`)
-8. **Track**: Write TSV to `batch/tracker-additions/`, auto-merged
+8. **Track**: Write job + eval to SQLite DB via `npx tsx dashboard/scripts/db-write.ts`
 
 ## Batch Processing
 
-The batch system processes multiple offers in parallel:
+The batch system processes multiple postings in parallel:
 
 ```
 batch-input.tsv    →  batch-runner.sh  →  N × claude -p workers
@@ -66,14 +72,14 @@ batch-input.tsv    →  batch-runner.sh  →  N × claude -p workers
 Each worker is a headless Claude instance (`claude -p`) that receives the full `batch-prompt.md` as context. Workers produce:
 - Report .md
 - PDF
-- Tracker TSV line
+- DB write (job + eval via `db-write.ts`)
 
 The orchestrator manages parallelism, state, retries, and resume.
 
 ## Data Flow
 
 ```
-cv.md                    →  Evaluation context
+data/cv.md               →  Evaluation context
 article-digest.md        →  Proof points for matching
 config/profile.yml       →  Candidate identity
 portals.yml              →  Scanner configuration
@@ -85,26 +91,33 @@ templates/cv-template.html → PDF generation template
 
 - Reports: `{###}-{company-slug}-{YYYY-MM-DD}.md` (3-digit zero-padded)
 - PDFs: `cv-candidate-{company-slug}-{YYYY-MM-DD}.pdf`
-- Tracker TSVs: `batch/tracker-additions/{id}.tsv`
 
 ## Pipeline Integrity
 
-Scripts maintain data consistency:
+The SQLite database at `dashboard/data/career-ops.db` is the canonical tracker. Data is written via `npx tsx dashboard/scripts/db-write.ts`.
 
 | Script | Purpose |
 |--------|---------|
-| `merge-tracker.mjs` | Merges batch TSV additions into applications.md |
-| `verify-pipeline.mjs` | Health check: statuses, duplicates, links |
-| `dedup-tracker.mjs` | Removes duplicate entries by company+role |
-| `normalize-statuses.mjs` | Maps status aliases to canonical values |
+| `dashboard/scripts/db-write.ts` | Insert jobs, evaluations, status updates; ping dashboard |
 | `cv-sync-check.mjs` | Validates setup consistency |
 
-## Dashboard TUI
+## Dashboard
 
-The `dashboard/` directory contains a standalone Go TUI application that visualizes the pipeline:
+The `dashboard/` directory contains a Next.js web application that visualizes the pipeline. It reads from a local SQLite database (`dashboard/data/career-ops.db`) that Claude Code populates after each evaluation via `dashboard/scripts/db-write.ts`.
 
-- Filter tabs: All, Evaluada, Aplicado, Entrevista, Top >=4, No Aplicar
-- Sort modes: Score, Date, Company, Status
-- Grouped/flat view
-- Lazy-loaded report previews
-- Inline status picker
+- Filterable by all statuses and recommendation types
+- Sortable columns with persistent filter/sort state (localStorage)
+- Inline status dropdowns on each row
+- Multi-select with bulk status updates
+- Real-time refresh via Server-Sent Events (POST to `/api/refresh` triggers client update)
+- Per-job detail page with evaluation scores, notes, JD text, and Claude Code command shortcuts
+- Mobile-friendly responsive layout
+
+### Dashboard data flow
+
+```
+Claude Code evaluates a job
+  → db-write.ts job '{...}'     # Insert job record
+  → db-write.ts eval '{...}'    # Insert evaluation
+  → db-write.ts ping            # POST /api/refresh → SSE push to browser
+```

@@ -43,8 +43,8 @@ PRs without a corresponding issue may be closed if they don't align with the pro
 
 - Keep modes language-agnostic when possible (Claude handles both EN and ES)
 - Scripts should handle missing files gracefully (check `existsSync` before `readFileSync`)
-- Dashboard changes require `go build` — test with real data before submitting
-- Don't commit personal data (cv.md, profile.yml, applications.md, reports/)
+- Dashboard changes are in `dashboard/` (Next.js) — test with `pnpm dev` before submitting
+- Don't commit personal data (data/cv.md, profile.yml, dashboard/data/career-ops.db, reports/)
 
 ## What we do NOT accept
 
@@ -58,12 +58,10 @@ PRs without a corresponding issue may be closed if they don't align with the pro
 ```bash
 # Scripts
 npm run doctor                # Setup validation
-node verify-pipeline.mjs     # Health check
 node cv-sync-check.mjs        # Config check
 
 # Dashboard
-cd dashboard && go build -o career-dashboard .
-./career-dashboard --path .
+cd dashboard && pnpm dev      # Opens at http://localhost:3000
 ```
 
 ## Need Help?

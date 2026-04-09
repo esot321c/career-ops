@@ -25,7 +25,7 @@ target_roles:
   archetypes:
     - name: "AI/ML Engineer"
       level: "Senior/Staff"
-      fit: "primary"        # primary = dream role, secondary = good fit, adjacent = stretch
+      fit: "primary" # primary = dream role, secondary = good fit, adjacent = stretch
     - name: "AI Product Manager"
       level: "Senior"
       fit: "secondary"
@@ -57,9 +57,9 @@ narrative:
   #   password: "demo-2026"
 
 compensation:
-  target_range: "$150K-200K"     # Your target total comp
+  target_range: "$150K-200K" # Your target total comp
   currency: "USD"
-  minimum: "$120K"               # Walk-away number
+  minimum: "$120K" # Walk-away number
   location_flexibility: "Remote preferred, 1 week/month on-site possible"
 
 location:

@@ -63,14 +63,14 @@ async function checkPlaywright() {
 }
 
 function checkCv() {
-  if (existsSync(join(projectRoot, 'cv.md'))) {
-    return { pass: true, label: 'cv.md found' };
+  if (existsSync(join(projectRoot, 'data', 'cv.md'))) {
+    return { pass: true, label: 'data/cv.md found' };
   }
   return {
     pass: false,
-    label: 'cv.md not found',
+    label: 'data/cv.md not found',
     fix: [
-      'Create cv.md in the project root with your CV in markdown',
+      'Create data/cv.md with your CV in markdown',
       'See examples/ for reference CVs',
     ],
   };

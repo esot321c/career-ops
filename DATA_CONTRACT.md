@@ -8,14 +8,13 @@ These files contain your personal data, customizations, and work product. Update
 
 | File | Purpose |
 |------|---------|
-| `cv.md` | Your CV in markdown |
+| `data/cv.md` | Your CV in markdown |
 | `config/profile.yml` | Your identity, targets, comp range |
 | `modes/_profile.md` | Your archetypes, narrative, negotiation scripts |
 | `article-digest.md` | Your proof points from portfolio |
-| `interview-prep/story-bank.md` | Your accumulated STAR+R stories |
 | `portals.yml` | Your customized company list |
-| `data/applications.md` | Your application tracker |
-| `data/pipeline.md` | Your URL inbox |
+| `dashboard/data/career-ops.db` | Your application tracker (SQLite) |
+| `data/pipeline.md` | Optional scratch pad for URLs |
 | `data/scan-history.tsv` | Your scan history |
 | `reports/*` | Your evaluation reports |
 | `output/*` | Your generated PDFs |
@@ -28,25 +27,22 @@ These files contain system logic, scripts, templates, and instructions that impr
 | File | Purpose |
 |------|---------|
 | `modes/_shared.md` | Scoring system, global rules, tools |
-| `modes/oferta.md` | Evaluation mode instructions |
+| `modes/full.md` | Full evaluation instructions |
 | `modes/pdf.md` | PDF generation instructions |
 | `modes/scan.md` | Portal scanner instructions |
 | `modes/batch.md` | Batch processing instructions |
 | `modes/apply.md` | Application assistant instructions |
 | `modes/auto-pipeline.md` | Auto-pipeline instructions |
-| `modes/contacto.md` | LinkedIn outreach instructions |
+| `modes/outreach.md` | LinkedIn outreach instructions |
 | `modes/deep.md` | Research prompt instructions |
-| `modes/ofertas.md` | Comparison instructions |
-| `modes/pipeline.md` | Pipeline processing instructions |
 | `modes/project.md` | Project evaluation instructions |
 | `modes/tracker.md` | Tracker instructions |
 | `modes/training.md` | Training evaluation instructions |
-| `modes/de/*` | German language modes |
 | `CLAUDE.md` | Agent instructions |
 | `*.mjs` | Utility scripts |
 | `batch/batch-prompt.md` | Batch worker prompt |
 | `batch/batch-runner.sh` | Batch orchestrator |
-| `dashboard/*` | Go TUI dashboard |
+| `dashboard/*` | Next.js dashboard + SQLite DB scripts |
 | `templates/*` | Base templates |
 | `fonts/*` | Self-hosted fonts |
 | `.claude/skills/*` | Skill definitions |

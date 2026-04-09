@@ -1,7 +1,5 @@
 # Personal data (user fills these)
-data/applications.md
-data/pipeline.md
-data/scan-history.tsv
+data/
 reports/*.md
 !reports/.gitkeep
 output/*
@@ -10,11 +8,10 @@ batch/logs/*
 !batch/logs/.gitkeep
 batch/batch-state.tsv
 batch/batch-input.tsv
-batch/tracker-additions/*.tsv
+batch/tracker-additions/
 !batch/tracker-additions/.gitkeep
 jds/*
 !jds/.gitkeep
-
 # User config and customization (never auto-updated)
 config/profile.yml
 portals.yml
@@ -32,6 +29,6 @@ node_modules/
 *.mp4
 
 # Claude Code local
+.claude/settings.json
 .claude/settings.local.json
 .claude/memory/
-career-dashboard
