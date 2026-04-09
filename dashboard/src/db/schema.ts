@@ -33,7 +33,7 @@ export const evaluations = sqliteTable("evaluations", {
 export const applications = sqliteTable("applications", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   jobId: integer("job_id").notNull().references(() => jobs.id),
-  status: text("status").notNull().default("evaluated"), // evaluated, applied, responded, interview, offer, rejected, discarded, skip
+  status: text("status").notNull().default("evaluated"), // discovered, evaluated, applied, responded, interview, offer, rejected, discarded, skip
   appliedAt: text("applied_at"),
   cvVersion: text("cv_version"),
   notes: text("notes"),

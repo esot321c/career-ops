@@ -72,7 +72,8 @@ Customization requests map to files:
 | Evaluates portfolio project | `project` |
 | Asks about application status | `tracker` |
 | Fills out application form | `apply` |
-| Searches for new postings | `scan` (discovers + light eval + DB write) |
+| Searches for new postings | `scan` (discovers only, no eval) |
+| Evaluates selected postings | `eval` |
 | Batch processes postings | `batch` |
 
 ### CV Source of Truth
@@ -141,7 +142,7 @@ npx tsx dashboard/scripts/db-write.ts ping
 
 **Recommendations:** `"apply"` (score >= 4.0), `"tweak"` (score 3.0-3.9), `"skip"` (score < 3.0)
 
-**Canonical statuses:** evaluated, applied, responded, interview, offer, rejected, discarded, skip (source of truth: `templates/states.yml`)
+**Canonical statuses:** discovered, evaluated, applied, responded, interview, offer, rejected, discarded, skip (source of truth: `templates/states.yml`)
 
 ---
 

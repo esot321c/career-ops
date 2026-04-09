@@ -1,6 +1,6 @@
 # Mode: scan — Portal Scanner (Posting Discovery)
 
-Scans configured job portals, filters by title relevance, performs a light evaluation against the CV, and writes results directly to the dashboard DB.
+Scans configured job portals, filters by title relevance, and writes discovered postings to the dashboard DB. No evaluation happens during scan -- the user triages in the dashboard and selects which postings to evaluate with `/career-ops eval`.
 
 ## Recommended execution
 
@@ -63,8 +63,6 @@ The levels are additive — all are executed, results are merged and deduplicate
 1. **Read configuration**: `portals.yml`
 2. **Read history**: `data/scan-history.tsv` → previously seen URLs
 3. **Read dedup sources**: dashboard DB (query `source_url` in jobs table via `npx tsx dashboard/scripts/db-write.ts`)
-3b. **Read CV once**: Read `data/cv.md` and cache the contents for the entire scan run. This is used for light evaluation in step 8.
-
 4. **Level 1 — Playwright scan** (parallel in batches of 3-5):
    For each company in `tracked_companies` with `enabled: true` and `careers_url` defined:
    a. `browser_navigate` to the `careers_url`
@@ -117,22 +115,16 @@ The levels are additive — all are executed, results are merged and deduplicate
 
    **Do not interrupt the entire scan if a URL fails.** If `browser_navigate` errors (timeout, 403, etc.), mark as `skipped_expired` and continue with the next one.
 
-8. **Light Eval + DB Write** for each new verified posting that passes filters:
+### Step 8 — Write to DB (Discovery Only)
 
-   **Note:** Light evals do NOT require additional Playwright navigation. The JD text was already captured during discovery (Level 1/2) or liveness verification (Level 3, step 7.5). Reuse that content.
+For each posting that passes all filters:
+1. Write to DB using the discover command:
+   ```bash
+   npx tsx dashboard/scripts/db-write.ts discover '{"company":"...","role":"...","sourceUrl":"...","boardType":"...","location":"...","remotePolicy":"...","source":"scan"}'
+   ```
+2. Record in `data/scan-history.tsv` with status `discovered`
 
-   a. **Extract JD text** from the already-loaded page content (Playwright snapshot or WebFetch/API response from earlier steps). Do not navigate again.
-   b. **Archetype detection**: Classify the posting into one of the 6 archetypes from `_shared.md` (AI Platform/LLMOps, Agentic/Automation, Technical AI PM, AI Solutions Architect, AI Forward Deployed, AI Transformation), or a hybrid of 2.
-   c. **Score fitScore (1-5)**: Compare JD requirements against the cached `data/cv.md`. Evaluate skills overlap, experience level, and archetype alignment. No WebSearch comp research for light eval -- score based on CV match only.
-   d. **Determine recommendation**: `"apply"` (fitScore >= 4.0), `"tweak"` (fitScore 3.0-3.9), `"skip"` (fitScore < 3.0)
-   e. **Write summary**: 2-3 sentence summary of the match. Note any red flags (visa, location mismatch, underleveled, missing hard requirements).
-   f. **Write to DB**:
-      ```bash
-      npx tsx dashboard/scripts/db-write.ts job '{"company":"...","role":"...","sourceUrl":"...","jdText":"...","boardType":"...","source":"scan"}'
-      # Returns: {"ok":true,"jobId":123}
-      npx tsx dashboard/scripts/db-write.ts eval '{"jobId":123,"mode":"light","fitScore":...,"recommendation":"...","summary":"...","redFlags":"..."}'
-      ```
-   g. **Record in `scan-history.tsv`**: `{url}\t{date}\t{query_name}\t{title}\t{company}\tevaluated`
+Note: No JD text extraction, no CV reading, no scoring. Discovery is metadata only. The user will select which postings to evaluate from the dashboard.
 
 9. **Postings filtered by title**: record in `scan-history.tsv` with status `skipped_title`
 10. **Duplicate postings**: record with status `skipped_dup`
@@ -161,7 +153,7 @@ If a non-publicly-accessible URL is found:
 
 ```
 url	first_seen	portal	title	company	status
-https://...	2026-02-10	Ashby — AI PM	PM AI	Acme	evaluated
+https://...	2026-02-10	Ashby — AI PM	PM AI	Acme	discovered
 https://...	2026-02-10	Greenhouse — SA	Junior Dev	BigCo	skipped_title
 https://...	2026-02-10	Ashby — AI PM	SA AI	OldCo	skipped_dup
 https://...	2026-02-10	WebSearch — AI PM	PM AI	ClosedCo	skipped_expired
@@ -170,18 +162,17 @@ https://...	2026-02-10	WebSearch — AI PM	PM AI	ClosedCo	skipped_expired
 ## Output summary
 
 ```
-Portal Scan -- {YYYY-MM-DD}
+Portal Scan — {YYYY-MM-DD}
 Postings found: N total
 Filtered by title: N relevant
 Duplicates: N (already in DB)
-Expired discarded: N (dead links, Level 3)
-Evaluated and written to DB: N
+Discovered and written to DB: N
 
-  + {company} | {title} | {score}/5 | {recommendation}
+  + {company} | {role} | {location}
   ...
 
--> Open dashboard at localhost:3000 to review results.
--> Run /career-ops full {jobId} for a deep evaluation on promising postings.
+-> Open dashboard at localhost:3000/pipeline to triage discovered postings.
+-> Select postings and run: /career-ops eval {ids}
 ```
 
 ## Managing careers_url

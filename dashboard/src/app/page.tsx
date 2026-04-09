@@ -1,4 +1,5 @@
 import { PipelineTable } from "@/components/pipeline-table";
+import { DiscoveredBanner } from "@/components/discovered-banner";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
           </span>
         </div>
       </div>
+      <DiscoveredBanner />
       <PipelineTable />
     </main>
   );

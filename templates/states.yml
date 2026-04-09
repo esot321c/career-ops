@@ -7,6 +7,12 @@
 # no dates, no extra text. Dates go in the date column.
 
 states:
+  - id: discovered
+    label: Discovered
+    aliases: []
+    description: Posting discovered by scan, pending triage
+    dashboard_group: discovered
+
   - id: evaluated
     label: Evaluated
     aliases: [evaluada]

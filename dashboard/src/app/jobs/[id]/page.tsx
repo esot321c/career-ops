@@ -42,7 +42,7 @@ type JobDetail = {
   } | null;
 };
 
-const STATUSES = ["evaluated", "applied", "responded", "interview", "offer", "rejected", "discarded", "skip"];
+const STATUSES = ["discovered", "evaluated", "applied", "responded", "interview", "offer", "rejected", "discarded", "skip"];
 
 export default function JobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -199,8 +199,20 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
             </div>
           ) : (
             <div className="border border-border rounded-lg p-5 text-center text-muted">
-              <p>No evaluation yet</p>
-              <p className="text-xs mt-1">Run: /career-ops scan or evaluate this job manually</p>
+              {application?.status === "discovered" ? (
+                <>
+                  <p className="text-yellow">Discovered by scan — not yet evaluated</p>
+                  <div className="mt-3 inline-block bg-yellow/5 border border-yellow/30 rounded-lg px-4 py-2">
+                    <code className="font-mono text-sm text-foreground select-all">/career-ops eval {job.id}</code>
+                  </div>
+                  <p className="text-xs mt-2">Run this command in Claude Code to evaluate this posting.</p>
+                </>
+              ) : (
+                <>
+                  <p>No evaluation yet</p>
+                  <p className="text-xs mt-1">Run: /career-ops scan or evaluate this job manually</p>
+                </>
+              )}
             </div>
           )}
 

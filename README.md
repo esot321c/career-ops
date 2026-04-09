@@ -58,36 +58,35 @@ That's it. On first run, Claude will walk you through setup -- paste your CV, se
 
 ## Workflow
 
-The typical workflow has two steps:
+The typical workflow has three steps:
 
-**1. Discover and evaluate** (in Claude Code):
-
+**1. Discover** (in Claude Code):
 ```bash
-/career-ops scan           # Scan 45+ portals, light-eval new postings, write to DB
+/career-ops scan           # Scan portals, discover new postings, write to DB
 ```
 
-Scan finds new postings, runs a light evaluation on each (quick scoring + recommendation), and writes results to the dashboard database. Or paste a URL directly to run a full evaluation.
-
-For promising jobs, run a **full evaluation** with all 6 blocks (role summary, CV match, level strategy, comp research, personalization plan, interview prep with STAR stories):
-
+**2. Triage** (in browser):
 ```bash
-/career-ops full 63      # Full A-F evaluation for a specific job
+cd dashboard && pnpm dev   # Open http://localhost:3000/pipeline
 ```
+Select which postings to evaluate, then copy the eval command.
 
-**2. Review and act** (in browser):
-
+**3. Evaluate** (in Claude Code):
 ```bash
-cd dashboard && pnpm dev   # Open http://localhost:3000
+/career-ops eval 123,124   # Light evaluate selected postings
 ```
 
-Browse your pipeline, filter by status or score, update statuses inline, and use the per-job Claude Code commands shown on each job detail page:
-
+Review scores in the dashboard, then proceed with the postings that scored well:
+```bash
+/career-ops full 123       # Full A-F evaluation
+/career-ops apply 123      # Fill application forms
+/career-ops pdf 123        # Generate tailored CV
 ```
-/career-ops apply 63       → Fill application forms with AI
+
+Or paste a URL directly to run a full evaluation with all 6 blocks:
+```bash
 /career-ops deep 63        → Deep company research
 /career-ops outreach 63    → LinkedIn outreach message
-/career-ops pdf 63         → Generate tailored CV
-/career-ops full 63      → Full A-F evaluation
 ```
 
 ### All commands
@@ -95,7 +94,8 @@ Browse your pipeline, filter by status or score, update statuses inline, and use
 ```
 /career-ops                → Show all available commands
 /career-ops {paste a JD}   → Full auto-pipeline (evaluate + PDF + tracker)
-/career-ops scan           → Scan portals, light-eval, write to DB
+/career-ops scan           → Scan portals, discover new postings, write to DB
+/career-ops eval {ids}     → Light evaluate selected postings
 /career-ops apply          → Fill application forms with AI
 /career-ops pdf            → Generate ATS-optimized CV
 /career-ops batch          → Batch evaluate multiple postings
